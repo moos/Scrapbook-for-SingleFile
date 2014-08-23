@@ -78,7 +78,8 @@ function getArchiveURL(id, editMode, callback) {
 		var array = [
 				new Uint8Array([ 0xEF, 0xBB, 0xBF ]),
 				content,
-				"<script class='scrapbook-editor'>history.replaceState({}, \"" + title.replace(/"/g, "'") + "\", \""
+        /* disable replaceState, see https://github.com/gildas-lormeau/Scrapbook-for-SingleFile/issues/6 */
+				"<script class='scrapbook-editor'>0 && history.replaceState({}, \"" + title.replace(/"/g, "'") + "\", \""
 						+ chrome.extension.getURL("pages/view.html") + "?" + id + "\");</script>",
 				"<link rel='stylesheet' class='scrapbook-editor' href='" + chrome.extension.getURL("pages/proxy-page.css") + "'></link>",
 				"<script class='scrapbook-editor'>var scrapbook_path = \"" + chrome.extension.getURL("") + "\";</script>",
