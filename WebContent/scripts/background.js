@@ -149,32 +149,33 @@ function getTabsInfo(callback) {
 	});
 }
 
+function notifyMsg(message, /*optional*/ title){
+  title = title || "PageArchiver";
+  chrome.notifications.create("", {
+    type: "basic",
+    iconUrl: "../resources/icon_48.png",
+    title: title,
+    message: message
+  }, function(){});
+}
+
 function onProcessEnd() {
-	var notification = webkitNotifications.createNotification("../resources/icon_48.png", "PageArchiver", "Pages are archived");
 	if (timeoutNoResponse)
 		clearTimeout(timeoutNoResponse);
 	timeoutNoResponse = null;
-	notification.show();
-	setTimeout(function() {
-		notification.cancel();
-	}, 3000);
+  notifyMsg("Pages are archived");
 }
 
 function setTimeoutNoResponse() {
 	if (timeoutNoResponse)
 		clearTimeout(timeoutNoResponse);
 	timeoutNoResponse = setTimeout(function() {
-		var notificationNoResponse = webkitNotifications.createNotification("../resources/icon_48.png", "PageArchiver",
-				"Warning (60s timeout): some pages take time to archive...");
 		tabs = {
 			length : 0
 		};
-		notificationNoResponse.show();
-		setTimeout(function() {
-			notificationNoResponse.cancel();
-		}, 3000);
 		timeoutNoResponse = null;
-	}, 60000);
+    notifyMsg("Warning (60s timeout): some pages take time to archive...");
+  }, 60000);
 }
 
 function saveTabs(tabIds) {
@@ -284,19 +285,14 @@ function exportToZip(checkedPages, filename) {
 			pctIndex = pct;
 		}
 	}, function(url) {
-		var notificationExportOK;
 		process.exportingToZip = false;
 		refreshBadge("", "");
 		chrome.tabs.create({
 			url : url,
 			selected : false
 		});
-		notificationExportOK = webkitNotifications.createNotification("../resources/icon_48.png", "PageArchiver", "Archives are exported");
-		notificationExportOK.show();
-		setTimeout(function() {
-			notificationExportOK.cancel();
-		}, 3000);
-	});
+    notifyMsg("Archives are exported");
+  });
 }
 
 function importFromZip(file) {
@@ -312,14 +308,9 @@ function importFromZip(file) {
 			pctIndex = pct;
 		}
 	}, function() {
-		var notificationImportOK;
 		process.importingFromZip = false;
 		refreshBadge("", "");
-		notificationImportOK = webkitNotifications.createNotification("../resources/icon_48.png", "PageArchiver", "Archives are imported");
-		notificationImportOK.show();
-		setTimeout(function() {
-			notificationImportOK.cancel();
-		}, 3000);
+    notifyMsg("Archives are imported");
 	});
 }
 
@@ -454,8 +445,8 @@ chrome.extension.onMessageExternal.addListener(function(request, sender, sendRes
 			if (options.expandNewArchive == "yes")
 				popupState.newPages[id] = true;
 		}, function() {
-			webkitNotifications.createNotification("../resources/icon_48.png", "PageArchiver", "Error when saving the archive on disk");
-		});
+      notifyMsg("Error when saving the archive on disk");
+    });
 		sendResponse({});
 		if (!tabs.length)
 			onProcessEnd();
